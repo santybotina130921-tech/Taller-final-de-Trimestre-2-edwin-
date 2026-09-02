@@ -45,8 +45,13 @@ public Libro(String titulo, String autor, String isbn, String genero, int año, 
     public void setCopiasDisponibles(int copiasDisponibles) { this.copiasDisponibles = copiasDisponibles; }
 
 
+    // método toString()
 
-
+    @Override
+    public String toString() {
+        return "Libro [ Título=" + titulo + ", Autor=" + autor + ", ISBN=" + isbn +
+                ", Género=" + genero + ", Año=" + año + ", Copias=" + copiasDisponibles + "]";
+    }
 
 
 }
