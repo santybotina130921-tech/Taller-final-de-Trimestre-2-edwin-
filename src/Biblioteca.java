@@ -10,4 +10,6 @@ public class Biblioteca {
         this.listaLibros = new ArrayList<>();
         this.mapaIsbn = new HashMap<>();
     }
-}
+        public boolean agregarLibro(String titulo, String autor, String isbn, String genero, int año, int copias) {
+
+        }
