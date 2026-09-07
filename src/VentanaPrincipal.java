@@ -11,20 +11,32 @@ public class VentanaPrincipal extends JFrame {
     private JTextField txtAnio;
     private JTextField txtCopias;
     private JButton btnGuardar;
+    private JTextField txtBuscarAutor;
+    private JButton btnFiltrar;
+    private JButton btnEliminar;
     private JTable tablaLibros;
     private DefaultTableModel modeloTabla;
 
     public VentanaPrincipal() {
         setTitle("Sistema de Gestión de Biblioteca");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(700, 500);
+        setSize(700, 550);
         setLocationRelativeTo(null);
 
         String[] columnas = { "Título", "Autor", "ISBN", "Género", "Año", "Copias" };
         modeloTabla = new DefaultTableModel(columnas, 0);
         tablaLibros = new JTable(modeloTabla);
         JScrollPane scrollTabla = new JScrollPane(tablaLibros);
-        scrollTabla.setPreferredSize(new Dimension(650, 250));
+        scrollTabla.setPreferredSize(new Dimension(650, 200));
+
+        JPanel panelFiltro = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelFiltro.add(new JLabel("Buscar por autor:"));
+        txtBuscarAutor = new JTextField(20);
+        panelFiltro.add(txtBuscarAutor);
+        btnFiltrar = new JButton("Filtrar");
+        panelFiltro.add(btnFiltrar);
+        JButton btnMostrarTodos = new JButton("Mostrar Todos");
+        panelFiltro.add(btnMostrarTodos);
 
         JPanel panelFormulario = new JPanel(new GridLayout(7, 2, 5, 5));
 
@@ -56,9 +68,15 @@ public class VentanaPrincipal extends JFrame {
         btnGuardar = new JButton("Guardar Libro");
         panelFormulario.add(btnGuardar);
 
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        btnEliminar = new JButton("Eliminar Libro");
+        panelBotones.add(btnEliminar);
+
         setLayout(new BorderLayout(5, 5));
         add(scrollTabla, BorderLayout.NORTH);
+        add(panelFiltro, BorderLayout.PAGE_START);
         add(panelFormulario, BorderLayout.CENTER);
+        add(panelBotones, BorderLayout.SOUTH);
     }
 
     public JTextField getTxtTitulo() { return txtTitulo; }
@@ -68,6 +86,9 @@ public class VentanaPrincipal extends JFrame {
     public JTextField getTxtAnio() { return txtAnio; }
     public JTextField getTxtCopias() { return txtCopias; }
     public JButton getBtnGuardar() { return btnGuardar; }
+    public JTextField getTxtBuscarAutor() { return txtBuscarAutor; }
+    public JButton getBtnFiltrar() { return btnFiltrar; }
+    public JButton getBtnEliminar() { return btnEliminar; }
     public JTable getTablaLibros() { return tablaLibros; }
     public DefaultTableModel getModeloTabla() { return modeloTabla; }
 
