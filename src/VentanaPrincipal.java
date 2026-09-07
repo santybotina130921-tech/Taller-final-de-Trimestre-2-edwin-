@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,6 +19,7 @@ public class VentanaPrincipal extends JFrame {
     private JButton btnEliminar;
     private JTable tablaLibros;
     private DefaultTableModel modeloTabla;
+    private TableRowSorter<DefaultTableModel> sorter;
 
     public VentanaPrincipal() {
         setTitle("Sistema de Gestión de Biblioteca");
@@ -28,6 +30,8 @@ public class VentanaPrincipal extends JFrame {
         String[] columnas = { "Título", "Autor", "ISBN", "Género", "Año", "Copias" };
         modeloTabla = new DefaultTableModel(columnas, 0);
         tablaLibros = new JTable(modeloTabla);
+        sorter = new TableRowSorter<>(modeloTabla);
+        tablaLibros.setRowSorter(sorter);
         JScrollPane scrollTabla = new JScrollPane(tablaLibros);
         scrollTabla.setPreferredSize(new Dimension(650, 200));
 
@@ -153,30 +157,18 @@ public class VentanaPrincipal extends JFrame {
 
         btnFiltrar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String buscar = txtBuscarAutor.getText().toLowerCase();
+                String buscar = txtBuscarAutor.getText().trim().toLowerCase();
                 if (buscar.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Escribe algo para filtrar");
                     return;
                 }
-                for (int i = 0; i < modeloTabla.getRowCount(); i++) {
-                    boolean visible = false;
-                    for (int j = 0; j < modeloTabla.getColumnCount(); j++) {
-                        Object valor = modeloTabla.getValueAt(i, j);
-                        if (valor != null && valor.toString().toLowerCase().contains(buscar)) {
-                            visible = true;
-                            break;
-                        }
-                    }
-                    tablaLibros.setRowHeight(i, visible ? 25 : 0);
-                }
+                sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + buscar));
             }
         });
 
         btnMostrarTodos.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                for (int i = 0; i < modeloTabla.getRowCount(); i++) {
-                    tablaLibros.setRowHeight(i, 25);
-                }
+                sorter.setRowFilter(null);
                 txtBuscarAutor.setText("");
             }
         });
