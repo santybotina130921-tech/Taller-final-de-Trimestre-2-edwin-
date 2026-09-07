@@ -120,6 +120,32 @@ public class VentanaPrincipal extends JFrame {
                     return;
                 }
 
+                if (copias.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "El campo Copias no puede estar vacío");
+                    return;
+                }
+
+                int copiasNum;
+                try {
+                    copiasNum = Integer.parseInt(copias);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "El campo Copias debe ser un número");
+                    return;
+                }
+
+                if (copiasNum < 0) {
+                    JOptionPane.showMessageDialog(null, "El campo Copias no puede ser negativo");
+                    return;
+                }
+
+                for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+                    Object isbnExistente = modeloTabla.getValueAt(i, 2);
+                    if (isbnExistente != null && isbnExistente.toString().equals(isbn)) {
+                        JOptionPane.showMessageDialog(null, "Ya existe un libro con ese ISBN");
+                        return;
+                    }
+                }
+
                 modeloTabla.addRow(new Object[]{titulo, autor, isbn, genero, anio, copias});
                 limpiarCampos();
             }
