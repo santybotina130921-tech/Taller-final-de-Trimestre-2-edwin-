@@ -1,8 +1,6 @@
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import java.awt.GridLayout;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -13,41 +11,54 @@ public class VentanaPrincipal extends JFrame {
     private JTextField txtAnio;
     private JTextField txtCopias;
     private JButton btnGuardar;
+    private JTable tablaLibros;
+    private DefaultTableModel modeloTabla;
 
     public VentanaPrincipal() {
-        setTitle("Registro de Libros");
+        setTitle("Sistema de Gestión de Biblioteca");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 350);
+        setSize(700, 500);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(7, 2, 5, 5));
 
-        add(new JLabel("Título:"));
+        String[] columnas = { "Título", "Autor", "ISBN", "Género", "Año", "Copias" };
+        modeloTabla = new DefaultTableModel(columnas, 0);
+        tablaLibros = new JTable(modeloTabla);
+        JScrollPane scrollTabla = new JScrollPane(tablaLibros);
+        scrollTabla.setPreferredSize(new Dimension(650, 250));
+
+        JPanel panelFormulario = new JPanel(new GridLayout(7, 2, 5, 5));
+
+        panelFormulario.add(new JLabel("Título:"));
         txtTitulo = new JTextField();
-        add(txtTitulo);
+        panelFormulario.add(txtTitulo);
 
-        add(new JLabel("Autor:"));
+        panelFormulario.add(new JLabel("Autor:"));
         txtAutor = new JTextField();
-        add(txtAutor);
+        panelFormulario.add(txtAutor);
 
-        add(new JLabel("ISBN / Código:"));
+        panelFormulario.add(new JLabel("ISBN / Código:"));
         txtIsbn = new JTextField();
-        add(txtIsbn);
+        panelFormulario.add(txtIsbn);
 
-        add(new JLabel("Género:"));
+        panelFormulario.add(new JLabel("Género:"));
         txtGenero = new JTextField();
-        add(txtGenero);
+        panelFormulario.add(txtGenero);
 
-        add(new JLabel("Año de publicación:"));
+        panelFormulario.add(new JLabel("Año de publicación:"));
         txtAnio = new JTextField();
-        add(txtAnio);
+        panelFormulario.add(txtAnio);
 
-        add(new JLabel("Copias disponibles:"));
+        panelFormulario.add(new JLabel("Copias disponibles:"));
         txtCopias = new JTextField();
-        add(txtCopias);
+        panelFormulario.add(txtCopias);
 
-        add(new JLabel(""));
+        panelFormulario.add(new JLabel(""));
         btnGuardar = new JButton("Guardar Libro");
-        add(btnGuardar);
+        panelFormulario.add(btnGuardar);
+
+        setLayout(new BorderLayout(5, 5));
+        add(scrollTabla, BorderLayout.NORTH);
+        add(panelFormulario, BorderLayout.CENTER);
     }
 
     public JTextField getTxtTitulo() { return txtTitulo; }
@@ -57,6 +68,8 @@ public class VentanaPrincipal extends JFrame {
     public JTextField getTxtAnio() { return txtAnio; }
     public JTextField getTxtCopias() { return txtCopias; }
     public JButton getBtnGuardar() { return btnGuardar; }
+    public JTable getTablaLibros() { return tablaLibros; }
+    public DefaultTableModel getModeloTabla() { return modeloTabla; }
 
     public void limpiarCampos() {
         txtTitulo.setText("");
