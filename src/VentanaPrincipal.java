@@ -97,6 +97,29 @@ public class VentanaPrincipal extends JFrame {
                     return;
                 }
 
+                if (genero.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "El campo Género no puede estar vacío");
+                    return;
+                }
+
+                if (anio.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "El campo Año no puede estar vacío");
+                    return;
+                }
+
+                int anioNum;
+                try {
+                    anioNum = Integer.parseInt(anio);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "El Año debe ser un número");
+                    return;
+                }
+
+                if (anioNum > 2026) {
+                    JOptionPane.showMessageDialog(null, "El Año no puede ser mayor al actual (2026)");
+                    return;
+                }
+
                 modeloTabla.addRow(new Object[]{titulo, autor, isbn, genero, anio, copias});
                 limpiarCampos();
             }
