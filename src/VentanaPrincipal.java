@@ -1,6 +1,8 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -72,11 +74,69 @@ public class VentanaPrincipal extends JFrame {
         btnEliminar = new JButton("Eliminar Libro");
         panelBotones.add(btnEliminar);
 
+        JPanel panelSuperior = new JPanel(new BorderLayout());
+        panelSuperior.add(scrollTabla, BorderLayout.NORTH);
+        panelSuperior.add(panelFiltro, BorderLayout.SOUTH);
+
         setLayout(new BorderLayout(5, 5));
-        add(scrollTabla, BorderLayout.NORTH);
-        add(panelFiltro, BorderLayout.PAGE_START);
+        add(panelSuperior, BorderLayout.NORTH);
         add(panelFormulario, BorderLayout.CENTER);
         add(panelBotones, BorderLayout.SOUTH);
+
+        btnGuardar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String titulo = txtTitulo.getText();
+                String autor = txtAutor.getText();
+                String isbn = txtIsbn.getText();
+                String genero = txtGenero.getText();
+                String anio = txtAnio.getText();
+                String copias = txtCopias.getText();
+
+                modeloTabla.addRow(new Object[]{titulo, autor, isbn, genero, anio, copias});
+                limpiarCampos();
+            }
+        });
+
+        btnFiltrar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String buscar = txtBuscarAutor.getText().toLowerCase();
+                if (buscar.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Escribe algo para filtrar");
+                    return;
+                }
+                for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+                    boolean visible = false;
+                    for (int j = 0; j < modeloTabla.getColumnCount(); j++) {
+                        Object valor = modeloTabla.getValueAt(i, j);
+                        if (valor != null && valor.toString().toLowerCase().contains(buscar)) {
+                            visible = true;
+                            break;
+                        }
+                    }
+                    tablaLibros.setRowHeight(i, visible ? 25 : 0);
+                }
+            }
+        });
+
+        btnMostrarTodos.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+                    tablaLibros.setRowHeight(i, 25);
+                }
+                txtBuscarAutor.setText("");
+            }
+        });
+
+        btnEliminar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int fila = tablaLibros.getSelectedRow();
+                if (fila >= 0) {
+                    modeloTabla.removeRow(fila);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Selecciona un libro de la tabla");
+                }
+            }
+        });
     }
 
     public JTextField getTxtTitulo() { return txtTitulo; }
