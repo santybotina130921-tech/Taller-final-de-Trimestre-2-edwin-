@@ -85,12 +85,17 @@ public class VentanaPrincipal extends JFrame {
 
         btnGuardar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String titulo = txtTitulo.getText();
-                String autor = txtAutor.getText();
-                String isbn = txtIsbn.getText();
-                String genero = txtGenero.getText();
-                String anio = txtAnio.getText();
-                String copias = txtCopias.getText();
+                String titulo = txtTitulo.getText().trim();
+                String autor = txtAutor.getText().trim();
+                String isbn = txtIsbn.getText().trim();
+                String genero = txtGenero.getText().trim();
+                String anio = txtAnio.getText().trim();
+                String copias = txtCopias.getText().trim();
+
+                if (titulo.isEmpty() || autor.isEmpty() || isbn.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Completa los campos: Título, Autor e ISBN");
+                    return;
+                }
 
                 modeloTabla.addRow(new Object[]{titulo, autor, isbn, genero, anio, copias});
                 limpiarCampos();
