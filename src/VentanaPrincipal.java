@@ -1,57 +1,245 @@
-
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class VentanaPrincipal extends JFrame {
-    private JTextField txtTitulo, txtAutor, txtIsbn, txtGenero, txtAnio, txtCopias;
+
+    private JTextField txtTitulo;
+    private JTextField txtAutor;
+    private JTextField txtIsbn;
+    private JTextField txtGenero;
+    private JTextField txtAnio;
+    private JTextField txtCopias;
     private JButton btnGuardar;
-    private Biblioteca biblioteca; // conexión con la lógica
+    private JTextField txtBuscarAutor;
+    private JButton btnFiltrar;
+    private JButton btnEliminar;
+    private JTable tablaLibros;
+    private DefaultTableModel modeloTabla;
+    private TableRowSorter<DefaultTableModel> sorter;
+    private Biblioteca biblioteca;  // conexion con la biblioteca
 
-    public VentanaPrincipal(Biblioteca biblioteca) {
-        this.biblioteca = biblioteca;
-
-        setTitle("Registro de Libros");
+    public VentanaPrincipal() {
+        biblioteca = new Biblioteca(); // aquí se conecta la lógica
+        setTitle("Sistema de Gestión de Biblioteca");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 350);
+        setSize(700, 550);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(7, 2, 5, 5));
 
-        add(new JLabel("Título:")); txtTitulo = new JTextField(); add(txtTitulo);
-        add(new JLabel("Autor:")); txtAutor = new JTextField(); add(txtAutor);
-        add(new JLabel("ISBN / Código:")); txtIsbn = new JTextField(); add(txtIsbn);
-        add(new JLabel("Género:")); txtGenero = new JTextField(); add(txtGenero);
-        add(new JLabel("Año de publicación:")); txtAnio = new JTextField(); add(txtAnio);
-        add(new JLabel("Copias disponibles:")); txtCopias = new JTextField(); add(txtCopias);
+        String[] columnas = {"Título", "Autor", "ISBN", "Género", "Año", "Copias"};
+        modeloTabla = new DefaultTableModel(columnas, 0);
+        tablaLibros = new JTable(modeloTabla);
+        sorter = new TableRowSorter<>(modeloTabla);
+        tablaLibros.setRowSorter(sorter);
+        JScrollPane scrollTabla = new JScrollPane(tablaLibros);
+        scrollTabla.setPreferredSize(new Dimension(650, 200));
 
-        add(new JLabel("")); btnGuardar = new JButton("Guardar Libro"); add(btnGuardar);
+        JPanel panelFiltro = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelFiltro.add(new JLabel("Buscar por autor:"));
+        txtBuscarAutor = new JTextField(20);
+        panelFiltro.add(txtBuscarAutor);
+        btnFiltrar = new JButton("Filtrar");
+        panelFiltro.add(btnFiltrar);
+        JButton btnMostrarTodos = new JButton("Mostrar Todos");
+        panelFiltro.add(btnMostrarTodos);
 
-        // Acción del botón
-        btnGuardar.addActionListener(e -> {
-            try {
-                String titulo = txtTitulo.getText();
-                String autor = txtAutor.getText();
-                String isbn = txtIsbn.getText();
-                String genero = txtGenero.getText();
-                int anio = Integer.parseInt(txtAnio.getText());
-                int copias = Integer.parseInt(txtCopias.getText());
+        JPanel panelFormulario = new JPanel(new GridLayout(7, 2, 5, 5));
 
-                boolean agregado = biblioteca.agregarLibro(titulo, autor, isbn, genero, anio, copias);
+        panelFormulario.add(new JLabel("Título:"));
+        txtTitulo = new JTextField();
+        panelFormulario.add(txtTitulo);
 
-                if (agregado) {
-                    JOptionPane.showMessageDialog(this, "Libro agregado con éxito");
-                    limpiarCampos();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Error: datos inválidos o ISBN duplicado");
+        panelFormulario.add(new JLabel("Autor:"));
+        txtAutor = new JTextField();
+        panelFormulario.add(txtAutor);
+
+        panelFormulario.add(new JLabel("ISBN / Código:"));
+        txtIsbn = new JTextField();
+        panelFormulario.add(txtIsbn);
+
+        panelFormulario.add(new JLabel("Género:"));
+        txtGenero = new JTextField();
+        panelFormulario.add(txtGenero);
+
+        panelFormulario.add(new JLabel("Año de publicación:"));
+        txtAnio = new JTextField();
+        panelFormulario.add(txtAnio);
+
+        panelFormulario.add(new JLabel("Copias disponibles:"));
+        txtCopias = new JTextField();
+        panelFormulario.add(txtCopias);
+
+        panelFormulario.add(new JLabel(""));
+        btnGuardar = new JButton("Guardar Libro");
+        panelFormulario.add(btnGuardar);
+
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        btnEliminar = new JButton("Eliminar Libro");
+        panelBotones.add(btnEliminar);
+
+        JPanel panelSuperior = new JPanel(new BorderLayout());
+        panelSuperior.add(scrollTabla, BorderLayout.NORTH);
+        panelSuperior.add(panelFiltro, BorderLayout.SOUTH);
+
+        setLayout(new BorderLayout(5, 5));
+        add(panelSuperior, BorderLayout.NORTH);
+        add(panelFormulario, BorderLayout.CENTER);
+        add(panelBotones, BorderLayout.SOUTH);
+
+
+        btnGuardar.addActionListener(this::actionPerformed);
+
+        btnGuardar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String titulo = txtTitulo.getText().trim();
+                String autor = txtAutor.getText().trim();
+                String isbn = txtIsbn.getText().trim();
+                String genero = txtGenero.getText().trim();
+                String anio = txtAnio.getText().trim();
+                String copias = txtCopias.getText().trim();
+
+
+                if (titulo.isEmpty() || autor.isEmpty() || isbn.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Completa los campos: Título, Autor e ISBN");
+                    return;
                 }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Error: Año y copias deben ser números");
+
+                if (genero.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "El campo Género no puede estar vacío");
+                    return;
+                }
+
+                if (anio.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "El campo Año no puede estar vacío");
+                    return;
+                }
+
+                int anioNum;
+                try {
+                    anioNum = Integer.parseInt(anio);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "El Año debe ser un número");
+                    return;
+                }
+
+                if (anioNum > 2026) {
+                    JOptionPane.showMessageDialog(null, "El Año no puede ser mayor al actual (2026)");
+                    return;
+                }
+
+                if (copias.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "El campo Copias no puede estar vacío");
+                    return;
+                }
+
+                int copiasNum;
+                try {
+                    copiasNum = Integer.parseInt(copias);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "El campo Copias debe ser un número");
+                    return;
+                }
+
+                if (copiasNum < 0) {
+                    JOptionPane.showMessageDialog(null, "El campo Copias no puede ser negativo");
+                    return;
+                }
+
+                for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+                    Object isbnExistente = modeloTabla.getValueAt(i, 2);
+                    if (isbnExistente != null && isbnExistente.toString().equals(isbn)) {
+                        JOptionPane.showMessageDialog(null, "Ya existe un libro con ese ISBN");
+                        return;
+                    }
+                }
+
+                modeloTabla.addRow(new Object[]{titulo, autor, isbn, genero, anio, copias});
+                limpiarCampos();
             }
-
-
         });
 
+        btnFiltrar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String buscar = txtBuscarAutor.getText().trim().toLowerCase();
+                if (buscar.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Escribe algo para filtrar");
+                    return;
+                }
+                sorter.setRowFilter(javax.swing.RowFilter.regexFilter("(?i)" + buscar));
+            }
+        });
+
+        btnMostrarTodos.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                sorter.setRowFilter(null);
+                txtBuscarAutor.setText("");
+            }
+        });
+
+        btnEliminar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int fila = tablaLibros.getSelectedRow();
+                if (fila >= 0) {
+                    modeloTabla.removeRow(fila);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Selecciona un libro de la tabla");
+                }
+            }
+        });
     }
 
+    public JTextField getTxtTitulo() {
+        return txtTitulo;
+    }
+
+    public JTextField getTxtAutor() {
+        return txtAutor;
+    }
+
+    public JTextField getTxtIsbn() {
+        return txtIsbn;
+    }
+
+    public JTextField getTxtGenero() {
+        return txtGenero;
+    }
+
+    public JTextField getTxtAnio() {
+        return txtAnio;
+    }
+
+    public JTextField getTxtCopias() {
+        return txtCopias;
+    }
+
+    public JButton getBtnGuardar() {
+        return btnGuardar;
+    }
+
+    public JTextField getTxtBuscarAutor() {
+        return txtBuscarAutor;
+    }
+
+    public JButton getBtnFiltrar() {
+        return btnFiltrar;
+    }
+
+    public JButton getBtnEliminar() {
+        return btnEliminar;
+    }
+
+    public JTable getTablaLibros() {
+        return tablaLibros;
+    }
+
+    public DefaultTableModel getModeloTabla() {
+        return modeloTabla;
+    }
+
+    // limpia
     public void limpiarCampos() {
         txtTitulo.setText("");
         txtAutor.setText("");
@@ -60,5 +248,25 @@ public class VentanaPrincipal extends JFrame {
         txtAnio.setText("");
         txtCopias.setText("");
     }
-}
 
+    private void actionPerformed(ActionEvent e) {
+        String titulo = txtTitulo.getText();
+        String autor = txtAutor.getText();
+        String isbn = txtIsbn.getText();
+        String genero = txtGenero.getText();
+        int anio = Integer.parseInt(txtAnio.getText());
+        int copias = Integer.parseInt(txtCopias.getText());
+
+
+        // mando los datos sueltos a el constructor de biblioteca
+        if (biblioteca.agregarLibro(titulo, autor, isbn, genero, anio, copias)) {
+            JOptionPane.showMessageDialog(this, "Libro agregado con éxito");
+            limpiarCampos();
+        } else {
+            JOptionPane.showMessageDialog(this, "Error: ISBN duplicado");
+        }
+    }
+
+
+
+}
