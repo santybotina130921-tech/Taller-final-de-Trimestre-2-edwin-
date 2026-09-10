@@ -23,17 +23,19 @@ public class Biblioteca {
                 genero == null || genero.trim().isEmpty()) {
             return false;
         }
-        //isbn y ya esiste ellibro
-        // Usamos el HashSet para verificar  si ya existe el ISBN
+        // Verificar ISBN duplicado
         if (codigosIsbn.contains(isbn)) {
             return false;
         }
+        // Validar año
         if (año > 2026) {
             return false;
         }
+        // Validar copias
         if (copias < 0) {
             return false;
         }
+
         Libro nuevoLibro = new Libro(titulo, autor, isbn, genero, año, copias);
         listaLibros.add(nuevoLibro);
         mapaIsbn.put(isbn, nuevoLibro);
@@ -41,6 +43,7 @@ public class Biblioteca {
 
         return true;
     }
+
     //obtener
     public ArrayList<Libro> obtenerTodos() {
         return listaLibros;
