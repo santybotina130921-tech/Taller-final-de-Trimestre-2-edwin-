@@ -47,7 +47,8 @@ public class Biblioteca {
 
     //obtener
     public ArrayList<Libro> obtenerTodos() {
-        return listaLibros;
+        return new ArrayList<>(listaLibros);
+
     }
     //buscar
     public ArrayList<Libro> filtrarPorAutor(String autorBuscado) {

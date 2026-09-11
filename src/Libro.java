@@ -1,51 +1,29 @@
-public class Libro {
-    // atributos
-    private String titulo, autor, isbn, genero;
-    private int año, copiasDisponibles;
+public class Libro extends MaterialBibliografico {
+    private String genero;
+    private int copiasDisponibles;
 
-    //constructor
-    public Libro(String titulo, String autor, String isbn, String genero, int año, int copias){
-        this.titulo = titulo;
-        this.autor = autor;
-        this.isbn = isbn;
+    public Libro(String titulo, String autor, String isbn, String genero, int año, int copias) {
+        super(titulo, autor, isbn, año);
         this.genero = genero;
-        this.año = año;
         this.copiasDisponibles = copias;
     }
 
-    // funciones / getters y setters
-
-    //titulo
-    public String getTitulo() { return titulo; }
-    public void setTitulo(String titulo) { this.titulo = titulo; }
-
-    //autor
-    public String getAutor() {return  autor;}
-    public void setAutor(String autor) { this.autor = autor; }
-
-    //isbn
-    public String getIsbn() {return  isbn;}
-    public void setIsbn(String isbn) { this.isbn = isbn; }
-
-    //genero
-    public String getGenero() {return  genero;}
+    public String getGenero() { return genero; }
     public void setGenero(String genero) { this.genero = genero; }
-
-    //año
-    public int getAño() {return  año;}
-    public void setAño(int año) { this.año = año; }
-
-    //copias Disponibles
-
-    public int getCopiasDisponibles() {return  copiasDisponibles;}
+    public int getCopiasDisponibles() { return copiasDisponibles; }
     public void setCopiasDisponibles(int copiasDisponibles) { this.copiasDisponibles = copiasDisponibles; }
 
+    public String getIsbn() { return getCodigo(); }
+    public void setIsbn(String isbn) { setCodigo(isbn); }
 
-    // método toString()
+    @Override
+    public String getTipo() {
+        return "Libro";
+    }
 
     @Override
     public String toString() {
-        return "Libro [ Título=" + titulo + ", Autor=" + autor + ", ISBN=" + isbn +
-                ", Género=" + genero + ", Año=" + año + ", Copias=" + copiasDisponibles + "]";
-    }}
-
+        return "Libro [ Título=" + getTitulo() + ", Autor=" + getAutor() + ", ISBN=" + getCodigo() +
+                ", Género=" + genero + ", Año=" + getAño() + ", Copias=" + copiasDisponibles + "]";
+    }
+}
