@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.time.Year;
 
 public class Biblioteca {
     private ArrayList<Libro> listaLibros;
@@ -28,7 +29,7 @@ public class Biblioteca {
             return false;
         }
         // Validar año
-        if (año > 2026) {
+        if (año > Year.now().getValue()) {
             return false;
         }
         // Validar copias

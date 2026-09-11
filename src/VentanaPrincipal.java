@@ -121,7 +121,7 @@ public class VentanaPrincipal extends JFrame {
         });
     }
 
-    // limpia
+    //limpia
     public void limpiarCampos() {
         txtTitulo.setText("");
         txtAutor.setText("");
@@ -131,25 +131,48 @@ public class VentanaPrincipal extends JFrame {
         txtCopias.setText("");
     }
 
-    // CAMBIO: Guardar conectado con biblioteca
+    //Guardar conectado con biblioteca
     private void actionPerformed(ActionEvent e) {
-        String titulo = txtTitulo.getText();
-        String autor = txtAutor.getText();
-        String isbn = txtIsbn.getText();
-        String genero = txtGenero.getText();
-        int anio = Integer.parseInt(txtAnio.getText());
-        int copias = Integer.parseInt(txtCopias.getText());
+        String titulo = txtTitulo.getText().trim();
+        String autor = txtAutor.getText().trim();
+        String isbn = txtIsbn.getText().trim();
+        String genero = txtGenero.getText().trim();
+        String anioStr = txtAnio.getText().trim();
+        String copiasStr = txtCopias.getText().trim();
 
+        // Validar campos obligatorios
+        if (titulo.isEmpty() || autor.isEmpty() || isbn.isEmpty() || genero.isEmpty()
+                || anioStr.isEmpty() || copiasStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Completa todos los campos obligatorios");
+            return;
+        }
+
+        int anio, copias;
+        try {
+            anio = Integer.parseInt(anioStr);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "El campo Año debe ser un número válido");
+            return;
+        }
+
+        try {
+            copias = Integer.parseInt(copiasStr);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "El campo Copias debe ser un número válido");
+            return;
+        }
+
+        // Mandar datos a la lógica
         if (biblioteca.agregarLibro(titulo, autor, isbn, genero, anio, copias)) {
             JOptionPane.showMessageDialog(this, "Libro agregado con éxito");
             limpiarCampos();
-            actualizarTabla(biblioteca.obtenerTodos()); // refresca la tabla
+            actualizarTabla(biblioteca.obtenerTodos());
         } else {
-            JOptionPane.showMessageDialog(this, "Error: ISBN duplicado");
+            JOptionPane.showMessageDialog(this, "Error: datos inválidos o ISBN duplicado");
         }
     }
 
-    // CAMBIO: método para sincronizar tabla con biblioteca
+    //método para sincronizar tabla con biblioteca
     private void actualizarTabla(ArrayList<Libro> libros) {
         DefaultTableModel modelo = (DefaultTableModel) tablaLibros.getModel();
         modelo.setRowCount(0); // limpia todas las filas
@@ -160,7 +183,7 @@ public class VentanaPrincipal extends JFrame {
                     libro.getAutor(),
                     libro.getIsbn(),
                     libro.getGenero(),
-                    libro.getAño(), // CAMBIO: usar "anio" en lugar de "año"
+                    libro.getAño(),
                     libro.getCopiasDisponibles()
             });
         }
