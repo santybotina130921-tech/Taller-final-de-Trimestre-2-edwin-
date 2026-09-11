@@ -10,7 +10,7 @@ public class VentanaPrincipal extends JFrame {
     private JTextField txtTitulo;
     private JTextField txtAutor;
     private JTextField txtIsbn;
-    private JTextField txtGenero;
+    private JComboBox<String> cmbGenero;
     private JTextField txtAnio;
     private JTextField txtCopias;
     private JButton btnGuardar;
@@ -61,8 +61,10 @@ public class VentanaPrincipal extends JFrame {
         panelFormulario.add(txtIsbn);
 
         panelFormulario.add(new JLabel("Género:"));
-        txtGenero = new JTextField();
-        panelFormulario.add(txtGenero);
+        String[] generos = {"Novela", "Ciencia", "Historia", "Infantil", "Técnico"};
+        cmbGenero = new JComboBox<>(generos);
+        cmbGenero.setEditable(true);
+        panelFormulario.add(cmbGenero);
 
         panelFormulario.add(new JLabel("Año de publicación:"));
         txtAnio = new JTextField();
@@ -90,14 +92,12 @@ public class VentanaPrincipal extends JFrame {
         add(panelBotones, BorderLayout.SOUTH);
 
 
-        btnGuardar.addActionListener(this::actionPerformed);
-
         btnGuardar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String titulo = txtTitulo.getText().trim();
                 String autor = txtAutor.getText().trim();
                 String isbn = txtIsbn.getText().trim();
-                String genero = txtGenero.getText().trim();
+                String genero = cmbGenero.getEditor().getItem().toString().trim();
                 String anio = txtAnio.getText().trim();
                 String copias = txtCopias.getText().trim();
 
@@ -156,8 +156,12 @@ public class VentanaPrincipal extends JFrame {
                     }
                 }
 
-                modeloTabla.addRow(new Object[]{titulo, autor, isbn, genero, anio, copias});
-                limpiarCampos();
+                if (biblioteca.agregarLibro(titulo, autor, isbn, genero, anioNum, copiasNum)) {
+                    modeloTabla.addRow(new Object[]{titulo, autor, isbn, genero, anio, copias});
+                    limpiarCampos();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Error: ISBN duplicado");
+                }
             }
         });
 
@@ -203,8 +207,8 @@ public class VentanaPrincipal extends JFrame {
         return txtIsbn;
     }
 
-    public JTextField getTxtGenero() {
-        return txtGenero;
+    public JComboBox<String> getCmbGenero() {
+        return cmbGenero;
     }
 
     public JTextField getTxtAnio() {
@@ -244,30 +248,9 @@ public class VentanaPrincipal extends JFrame {
         txtTitulo.setText("");
         txtAutor.setText("");
         txtIsbn.setText("");
-        txtGenero.setText("");
+        cmbGenero.getEditor().setItem("");
         txtAnio.setText("");
         txtCopias.setText("");
     }
-
-    private void actionPerformed(ActionEvent e) {
-        String titulo = txtTitulo.getText();
-        String autor = txtAutor.getText();
-        String isbn = txtIsbn.getText();
-        String genero = txtGenero.getText();
-        int anio = Integer.parseInt(txtAnio.getText());
-        int copias = Integer.parseInt(txtCopias.getText());
-
-
-        // mando los datos sueltos a el constructor de biblioteca
-        if (biblioteca.agregarLibro(titulo, autor, isbn, genero, anio, copias)) {
-            JOptionPane.showMessageDialog(this, "Libro agregado con éxito");
-            limpiarCampos();
-        } else {
-            JOptionPane.showMessageDialog(this, "Error: ISBN duplicado");
-        }
-    }
-
-
-
 }
 
